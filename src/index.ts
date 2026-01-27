@@ -1,0 +1,1 @@
+console.log("bookBarberNow backend started")
