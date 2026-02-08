@@ -5,9 +5,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const health_route_1 = __importDefault(require("./routes/health.route"));
+const user_route_1 = __importDefault(require("./routes/user.route"));
 const app = (0, express_1.default)();
 //Middleware
 app.use(express_1.default.json());
 //Routes
 app.use("/", health_route_1.default);
+app.use("/api/users", user_route_1.default);
 exports.default = app;
