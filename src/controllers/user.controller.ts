@@ -21,11 +21,14 @@ export const signupUser = async (req : Request, res : Response) => {
 
         const hashedPassword = await bcrypt.hash(password, 10);
 
-        const user = await User.create({
+        const createdUser = await User.create({
             name,
             email,
             password : hashedPassword,
         })
+
+        //Fetch user again WITHOUT password(since select : false is there in password schema)
+        const user = await User.findById(createdUser._id);
 
         return res.status(201).json({
             message : "User created successfully",

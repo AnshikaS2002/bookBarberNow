@@ -21,11 +21,13 @@ const signupUser = async (req, res) => {
             });
         }
         const hashedPassword = await bcrypt_1.default.hash(password, 10);
-        const user = await user_model_1.default.create({
+        const createdUser = await user_model_1.default.create({
             name,
             email,
             password: hashedPassword,
         });
+        //Fetch user again WITHOUT password(since select : false is there in password schema)
+        const user = await user_model_1.default.findById(createdUser._id);
         return res.status(201).json({
             message: "User created successfully",
             user,
