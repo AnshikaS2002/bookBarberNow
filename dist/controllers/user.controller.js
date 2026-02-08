@@ -9,6 +9,17 @@ const bcrypt_1 = __importDefault(require("bcrypt"));
 const signupUser = async (req, res) => {
     try {
         const { name, email, password } = req.body;
+        if (!name || !email || !password) {
+            return res.status(400).json({
+                message: "All fields are required"
+            });
+        }
+        const existingUser = await user_model_1.default.findOne({ email });
+        if (existingUser) {
+            return res.status(409).json({
+                message: "User with this email already exists",
+            });
+        }
         const hashedPassword = await bcrypt_1.default.hash(password, 10);
         const user = await user_model_1.default.create({
             name,

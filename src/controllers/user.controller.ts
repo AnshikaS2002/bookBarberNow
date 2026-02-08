@@ -5,6 +5,19 @@ import bcrypt from "bcrypt";
 export const signupUser = async (req : Request, res : Response) => {
     try{
         const {name, email, password} = req.body;
+        if(!name || !email || !password) {
+            return res.status(400).json({
+                message : "All fields are required"
+            })
+        }
+
+        const existingUser = await User.findOne({email});
+
+        if(existingUser) {
+            return res.status(409).json({
+                message : "User with this email already exists",
+            });
+        }
 
         const hashedPassword = await bcrypt.hash(password, 10);
 
