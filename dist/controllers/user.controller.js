@@ -6,6 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.loginUser = exports.signupUser = void 0;
 const user_model_1 = __importDefault(require("../models/user.model"));
 const bcrypt_1 = __importDefault(require("bcrypt"));
+const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const signupUser = async (req, res) => {
     try {
         const { name, email, password } = req.body;
@@ -60,8 +61,10 @@ const loginUser = async (req, res) => {
                 message: "Invalid email or password",
             });
         }
+        const token = jsonwebtoken_1.default.sign({ userId: user._id }, process.env.JWT_SECRET, { expiresIn: "1h" });
         return res.status(200).json({
             message: "Login successful",
+            token,
             user: {
                 _id: user._id,
                 name: user.name,
