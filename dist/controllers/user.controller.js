@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.signupUser = void 0;
+exports.loginUser = exports.signupUser = void 0;
 const user_model_1 = __importDefault(require("../models/user.model"));
 const bcrypt_1 = __importDefault(require("bcrypt"));
 const signupUser = async (req, res) => {
@@ -40,3 +40,39 @@ const signupUser = async (req, res) => {
     }
 };
 exports.signupUser = signupUser;
+const loginUser = async (req, res) => {
+    try {
+        const { email, password } = req.body;
+        if (!email || !password) {
+            return res.status(400).json({
+                message: "Email and password are required",
+            });
+        }
+        const user = await user_model_1.default.findOne({ email }).select("+password");
+        if (!user) {
+            return res.status(401).json({
+                message: "Invalid email or password",
+            });
+        }
+        const isPasswordMatch = await bcrypt_1.default.compare(password, user.password);
+        if (!isPasswordMatch) {
+            return res.status(401).json({
+                message: "Invalid email or password",
+            });
+        }
+        return res.status(200).json({
+            message: "Login successful",
+            user: {
+                _id: user._id,
+                name: user.name,
+                email: user.email,
+            },
+        });
+    }
+    catch (error) {
+        return res.status(500).json({
+            message: "Internal server error",
+        });
+    }
+};
+exports.loginUser = loginUser;
