@@ -1,11 +1,12 @@
 import {Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
+import User from "../models/user.model";
 
 interface JwtPayload {
     userId : string;
 }
 
-export const authMiddleware = (
+export const authMiddleware = async (
     req : Request,
     res : Response,
     next : NextFunction
@@ -30,12 +31,17 @@ export const authMiddleware = (
         const decoded = jwt.verify(
             token,
             process.env.JWT_SECRET as string
-        ) as JwtPayload;
+        ) as {userId : string};
 
-        req.user = {
-            userId: decoded.userId,
-        };
+        const user = await User.findById(decoded.userId);
 
+        if(!user) {
+            return res.status(401).json({
+                message : "user no longer exists",
+            });
+        }
+
+        req.user = user;
         next();
     } catch (error) {
         return res.status(401).json({

@@ -1,6 +1,7 @@
 import express from "express";
 import healthRoute from "./routes/health.route";
 import userRoutes from "./routes/user.route";
+
 const app = express();
 
 //Middleware

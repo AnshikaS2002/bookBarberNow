@@ -12,4 +12,10 @@ router.get("/profile", auth_middleware_1.authMiddleware, (req, res) => {
         userId: req.user?.userId,
     });
 });
+router.get("/me", auth_middleware_1.authMiddleware, (req, res) => {
+    return res.status(200).json({
+        message: "Current user fetched successfully",
+        user: req.user,
+    });
+});
 exports.default = router;

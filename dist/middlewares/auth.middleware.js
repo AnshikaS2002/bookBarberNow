@@ -5,7 +5,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.authMiddleware = void 0;
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
-const authMiddleware = (req, res, next) => {
+const user_model_1 = __importDefault(require("../models/user.model"));
+const authMiddleware = async (req, res, next) => {
     try {
         const authHeader = req.headers.authorization;
         if (!authHeader) {
@@ -20,9 +21,13 @@ const authMiddleware = (req, res, next) => {
             });
         }
         const decoded = jsonwebtoken_1.default.verify(token, process.env.JWT_SECRET);
-        req.user = {
-            userId: decoded.userId,
-        };
+        const user = await user_model_1.default.findById(decoded.userId);
+        if (!user) {
+            return res.status(401).json({
+                message: "user no longer exists",
+            });
+        }
+        req.user = user;
         next();
     }
     catch (error) {
